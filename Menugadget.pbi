@@ -3,7 +3,7 @@
 ;|-------------------------------------------------------------------------------------------------
 ;|
 ;|  Title            : MenuGadget
-;|  Version          : 1.0
+;|  Version          : 1.1
 ;|  Copyright        : Mesaliko
 ;|
 ;|  PureBasic        : 6.xx
@@ -14,19 +14,22 @@
 ;|
 ;|  Description      : Gadget for pop up a custom menu
 ;|
-;|  Forum Topic      :
+;|  Forum Topic  en  : https://www.purebasic.fr/english/viewtopic.php?t=88341
+;|  Forum Topic  fr  : https://www.purebasic.fr/french/viewtopic.php?t=19490&sid=b6aaf1b7aa2f6333b18a24ec4d16b143
 ;|
 ;|  Website          :
 ;|
 ;|  2026
 ;|-------------------------------------------------------------------------------------------------
 
+;| 1.1  Bug fontsize, hover height, items height, DPI
 
 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
 CompilerEndIf
+
 
 
 
@@ -259,8 +262,37 @@ Structure MenuGadget
 EndStructure
 
 ; Declare public
-;
+
+
+
+
+
+
+
+
+
 ; Set & Get Declare
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -382,13 +414,13 @@ Procedure MenuGadget_Examine(*MenuGadget.MenuGadget)
         \MouseIn = #True
         
       Case #PB_EventType_LeftClick
-        HideGadget(\Container, 1) 
+        HideGadget(\Container, 1)
         If \Item()\Disabled Or \Item()\Text = ""
           \MenuClicked = -1
-          ProcedureReturn -1
+          ProcedureReturn - 1
         Else
-          \MenuClicked = \HoverItem -1
-          If \PBMenuID >=0
+          \MenuClicked = \HoverItem - 1
+          If \PBMenuID >= 0
             PostEvent(#PB_Event_Menu, \Window, \MenuClicked)
           EndIf
         EndIf
@@ -419,7 +451,11 @@ Procedure MenuGadget_Update(*MenuGadget.MenuGadget)
       Y = \MarginTop
       
       ; préparation
-      VectorFont(\FontID, \FontSize)
+      If \FontSize
+        VectorFont(\FontID, \FontSize)
+      Else
+        VectorFont(\FontID)
+      EndIf
       
       If \H = #MenuGadget_DefaultHeight
         
@@ -441,8 +477,9 @@ Procedure MenuGadget_Update(*MenuGadget.MenuGadget)
       
       
       
+      
       For i = 1 To \CountLines
-
+        
         SelectElement(\Item(), i - 1)
         
         y0 = \Interline - \TextHeightOffset + Y
@@ -473,33 +510,36 @@ Procedure MenuGadget_Update(*MenuGadget.MenuGadget)
         \Item()\Layout\TextShortCutX = \W - \MarginRight - \Item()\Layout\TextShortCutW
         
         \Item()\Layout\ImageX = \BorderW + \MarginLeft
-        \Item()\Layout\ImageY = y0   ;
-        \Item()\Layout\ImageH = \TextHeight
+        \Item()\Layout\ImageY = \Item()\TopLineY
+        \Item()\Layout\ImageH = \Item()\BottomLineY - \Item()\TopLineY;\TextHeight
         
         
         If \Item()\UnderlineCharPos
           \Item()\UnderlineC = Mid(\Item()\Text, \Item()\UnderlineCharPos, 1)
           \Item()\UnderlineX = \Item()\Layout\TextX + VectorTextWidth(Left(\Item()\Text, \Item()\UnderlineCharPos - 1), #PB_VectorText_Visible)
-          \Item()\UnderlineY = \y0(i) + VectorTextHeight(\Item()\UnderlineC)
-          \Item()\UnderlineW = VectorTextWidth(\Item()\UnderlineC, #PB_VectorText_Visible)
+          \Item()\UnderlineY = \y0(i) + VectorTextHeight(\Item()\UnderlineC, #PB_VectorText_Baseline) + DesktopScaledY(2)
+          \Item()\UnderlineW = VectorTextWidth(\Item()\UnderlineC)
         EndIf
         
         Y + \Interline + \TextHeightVisible
         
       Next i
       
-      \H = Y + \MarginBottom
-      
+      \H     = Y + \MarginBottom
+      \y0(i) = Y - \MarginBottom
       
       ; Redimensionnement du gadget
-      
       MenuGadget_StopDrawing(*MenuGadget)
       ResizeGadget(\Container, #PB_Ignore, #PB_Ignore, DesktopUnscaledX(\W + \RBorder), DesktopUnscaledY(\H + \RBorder))
-      ResizeGadget(\Number, #PB_Ignore, #PB_Ignore, DesktopUnscaledX(\W), DesktopUnscaledY(\H))                         
-                                                                                                                                                                                                                                         
+      ResizeGadget(\Number, #PB_Ignore, #PB_Ignore, DesktopUnscaledX(\W), DesktopUnscaledY(\H))
+      
       PostEvent(#PB_Event_Gadget, \Window, \Number, #MenuGadget_EventType_Resize, - 1)
       MenuGadget_StartDrawing(*MenuGadget)
-      VectorFont(\FontID)
+      If \FontSize
+        VectorFont(\FontID, \FontSize)
+      Else
+        VectorFont(\FontID)
+      EndIf
       \Resized = #True
       
     EndIf
@@ -522,16 +562,20 @@ Procedure MenuGadget_Draw(*MenuGadget.MenuGadget)
     Protected *n
     Protected i
     Protected Line$, tmp$, c$
-    Protected y0.f, ux.f, uy.f, uw.f
+    Protected y0.f, ux.f, uy.f, uw.f, y1.f
     
     
     ; initialisation = CLS
-    VectorFont(\FontID, \FontSize)
+    If \FontSize
+      VectorFont(\FontID, \FontSize)
+    Else
+      VectorFont(\FontID)
+    EndIf
     VectorSourceColor(\MenuColor)
     FillVectorOutput()
     
     ;draw text
-    *n = FirstElement(\Item());SelectElement(\Item(),0)
+    *n = FirstElement(\Item())
     
     
     If ListSize(\Item()) > 0
@@ -596,6 +640,7 @@ Procedure MenuGadget_Draw(*MenuGadget.MenuGadget)
         ;MovePathCursor(\Item()\Layout\TextX, \Item()\BottomLineY)
         ;AddPathLine(VectorOutputWidth(), \Item()\BottomLineY)
         ;StrokePath(1)
+        
         *n = NextElement(\Item())
       Next i
       
@@ -603,12 +648,12 @@ Procedure MenuGadget_Draw(*MenuGadget.MenuGadget)
       If \MouseIn
         If \HoverItem > 0
           
-          y0 = \y0(\HoverItem)
+          y0 = \y0(\HoverItem):y1 = \y0(\HoverItem + 1) - y0
           SelectElement(\Item(), \HoverItem - 1)
           line$ = \Item()\Text
           If line$
             VectorSourceColor(\Item()\Color\FaceColorSelected)
-            AddPathBox(\BorderW, y0, VectorOutputWidth() - \BorderW - \BorderW, \TextHeightVisible)
+            AddPathBox(\BorderW, \Item()\TopLineY, VectorOutputWidth() - \BorderW - \BorderW, y1)
             FillPath()
             VectorSourceColor(\Item()\Color\TextColorSelected)
             MovePathCursor(\Item()\Layout\TextX, y0)
@@ -683,7 +728,7 @@ Procedure UpdateMenuGadget(Gadget.i)
   ;,,1xMenuGadget(G,)
   
   Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
-
+  
   If MenuGadget_StartDrawing(*MenuGadget)
     MenuGadget_Update(*MenuGadget)
     MenuGadget_Draw(*MenuGadget)
@@ -795,13 +840,13 @@ Procedure MenuGadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Attributes.i, Window
     Result = Gadget
   Else
     If Attributes & #MenuGadget_BorderRaised
-      Border = #PB_Container_Raised:RBorder = 6
+      Border = #PB_Container_Raised:RBorder = DesktopScaledX(6)
     ElseIf Attributes & #MenuGadget_BorderFlat
-      Border = #PB_Container_Flat:RBorder = 1
+      Border = #PB_Container_Flat:RBorder = DesktopScaledX(1)
     ElseIf Attributes & #MenuGadget_BorderSingle
-      Border = #PB_Container_Single:RBorder = 2
+      Border = #PB_Container_Single:RBorder = DesktopScaledX(2)
     ElseIf Attributes & #MenuGadget_BorderDouble
-      Border = #PB_Container_Double:RBorder = 4
+      Border = #PB_Container_Double:RBorder = DesktopScaledX(4)
     Else
       Border = #PB_Container_BorderLess:RBorder = 0
     EndIf
@@ -843,7 +888,7 @@ Procedure MenuGadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Attributes.i, Window
     CompilerEndSelect
     
     If Attributes & #MenuGadget_FontLarge
-      \DefaultFontSize = 14
+      \DefaultFontSize = 20
     EndIf
     
     
@@ -914,8 +959,8 @@ Procedure.i AddMenuGadgetItem(Gadget.i, Position.i, Text.s, ImageID.i = #Null, D
   
   *MenuGadget\CountLines = *MenuGadget\CountLines + 1
   
-  ReDim *MenuGadget\y0(*MenuGadget\CountLines)
-  ReDim *MenuGadget\yy(*MenuGadget\CountLines)
+  ReDim *MenuGadget\y0(*MenuGadget\CountLines + 1)
+  ReDim *MenuGadget\yy(*MenuGadget\CountLines + 1)
   
   
   With *Item
@@ -926,7 +971,7 @@ Procedure.i AddMenuGadgetItem(Gadget.i, Position.i, Text.s, ImageID.i = #Null, D
     tmp$              = RemoveString(tmp$, "&", #PB_String_NoCase)
     \Text             = ReplaceString(tmp$, Chr(1), "&", #PB_String_NoCase)
     
-      MenuGadget_ReplaceImage(*MenuGadget, *Item, ImageID)
+    MenuGadget_ReplaceImage(*MenuGadget, *Item, ImageID)
     
     \DataValue               = DataValue
     \Color\Text              = *MenuGadget\TextColor
@@ -936,7 +981,7 @@ Procedure.i AddMenuGadgetItem(Gadget.i, Position.i, Text.s, ImageID.i = #Null, D
     \Color\LineColor         = *MenuGadget\LineColor
     \FontID                  = *MenuGadget\FontID
     \FontSize                = *MenuGadget\FontSize
-    \UnderlineT              = 1.1
+    \UnderlineT              = DesktopScaledX(1.1)
   EndWith
   
   MenuGadget_PostUpdate(*MenuGadget)
@@ -1138,10 +1183,14 @@ Procedure SetMenuGadgetFont(Gadget.i, FontID.i)
   
   Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
   
-  If FontID = #PB_Default
-    *MenuGadget\FontID = *MenuGadget\DefaultFontID
-  Else
-    *MenuGadget\FontID = FontID
+  If FontID
+    If FontID = #PB_Default
+      *MenuGadget\FontID   = *MenuGadget\DefaultFontID
+      *MenuGadget\FontSize = *MenuGadget\DefaultFontSize
+    Else
+      *MenuGadget\FontID   = FontID
+      *MenuGadget\FontSize = 0
+    EndIf
   EndIf
   
   ; Reset to 0 to force a new size calculation
@@ -1345,10 +1394,10 @@ EndProcedure
 
 Procedure GetMenu(Gadget.i)
   Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
-
- If *MenuGadget\MenuClicked
-   ProcedureReturn *MenuGadget\MenuClicked
- EndIf
+  
+  If *MenuGadget\MenuClicked
+    ProcedureReturn *MenuGadget\MenuClicked
+  EndIf
   
 EndProcedure
 
@@ -1368,29 +1417,29 @@ EndProcedure
 
 Procedure DisplayMenuGadget(Gadget.i, WindowID.i, X.i = #PB_Ignore, Y.i = #PB_Ignore)
   
-    If IsGadget(Gadget)
+  If IsGadget(Gadget)
+    
+    Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
+    
+    If IsWindow(WindowID)
       
-      Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
+      If X = #PB_Ignore:X = WindowMouseX(WindowID):EndIf
+      If Y = #PB_Ignore:Y = WindowMouseY(WindowID):EndIf
       
-      If IsWindow(WindowID)
-        
-        If X = #PB_Ignore:X = WindowMouseX(WindowID):EndIf
-        If Y = #PB_Ignore:Y = WindowMouseY(WindowID):EndIf
-        
-        If Y > WindowHeight(WindowID) - *MenuGadget\H
-          Y = WindowHeight(WindowID) - *MenuGadget\H
-        EndIf
-        
-        ResizeGadget(*MenuGadget\Container, X, Y, #PB_Ignore, #PB_Ignore)
-        HideGadget(*MenuGadget\Container, #False)
-        
-      Else
-        ProcedureReturn
+      If Y > WindowHeight(WindowID) - *MenuGadget\H
+        Y = WindowHeight(WindowID) - *MenuGadget\H
       EndIf
+      
+      ResizeGadget(*MenuGadget\Container, X, Y, #PB_Ignore, #PB_Ignore)
+      HideGadget(*MenuGadget\Container, #False)
+      
     Else
       ProcedureReturn
     EndIf
-    
+  Else
+    ProcedureReturn
+  EndIf
+  
 EndProcedure
 
 ;Image png of a 'check' 512x512
@@ -1575,9 +1624,9 @@ EndDataSection
 CompilerIf #PB_Compiler_IsMainFile
   
   ;-
-  ;- >>>>>>>TEST>>>>>> 
+  ;- >>>>>>>TEST>>>>>>
   ; ------------------------------------------------
-  ; UseModule MenuGadget
+
   
   EnableExplicit
   
@@ -1597,7 +1646,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ;Do something
       Case 6
         End; Quit
-              
+        
     EndSelect
     
   EndProcedure
@@ -1650,9 +1699,9 @@ CompilerIf #PB_Compiler_IsMainFile
     UsePNGImageDecoder()
     
     ;Try different font
-    ;LoadFont(0, "Monotype Corsiva", 20)
+    LoadFont(0, "Monotype Corsiva", 24)
     ;   LoadFont(0, "Times New Roman", 20)
-    LoadFont(0, "", 20)
+    ;LoadFont(0, "", 20)
     ;   LoadFont(0, "Times New Roman", 11)
     
     
@@ -1685,6 +1734,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     UsePBMenu(Gadget, 0)
     UsePBMenu(Gadget, #PB_Any)
     
+    ;     SetMenuGadgetFont(Gadget, FontID(0))
+    ;     SetMenuGadgetFontSize(Gadget, 18)
     
     ;- Loop
     Repeat
@@ -1726,9 +1777,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 6.03 LTS (Windows - x86)
-; CursorPosition = 1719
-; FirstLine = 1692
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 17
 ; Folding = --------
 ; EnableXP
 ; DPIAware

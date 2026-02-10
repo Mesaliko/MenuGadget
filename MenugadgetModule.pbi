@@ -3,7 +3,7 @@
 ;|-------------------------------------------------------------------------------------------------
 ;|
 ;|  Title            : MenuGadget Module
-;|  Version          : 1.0
+;|  Version          : 1.1
 ;|  Copyright        : Mesaliko
 ;|
 ;|  PureBasic        : 6.xx
@@ -14,13 +14,14 @@
 ;|
 ;|  Description      : Gadget for pop up a custom menu
 ;|
-;|  Forum Topic      :
-;|
+;|  Forum Topic  en  : https://www.purebasic.fr/english/viewtopic.php?t=88341
+;|  Forum Topic  fr  : https://www.purebasic.fr/french/viewtopic.php?t=19490&sid=b6aaf1b7aa2f6333b18a24ec4d16b143
 ;|  Website          :
 ;|
 ;|  2026
 ;|-------------------------------------------------------------------------------------------------
 
+;| 1.1  Bug fontsize, hover height, items height, DPI
 
 
 
@@ -31,12 +32,12 @@ CompilerEndIf
 
 DeclareModule MenuGadget
   
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-;-  1. Constantes
-;|__________________________________________________________________________________________________
+  ;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  ;-  1. Constantes
+  ;|__________________________________________________________________________________________________
   
   
-; Attributes
+  ; Attributes
   EnumerationBinary
     
     #MenuGadget_None = 0
@@ -52,11 +53,11 @@ DeclareModule MenuGadget
     
   EndEnumeration
   
-; Other attributes
+  ; Other attributes
   #MenuGadget_DefaultHeight = 0
   #MenuGadget_DefaultWidth  = 0
   
-; Global attributes
+  ; Global attributes
   EnumerationBinary
     #MenuGadget_BorderW
     #MenuGadget_BorderH
@@ -78,7 +79,7 @@ DeclareModule MenuGadget
     
   EndEnumeration
   
-; Events
+  ; Events
   Enumeration #PB_EventType_FirstCustomValue
     
     #MenuGadget_EventType_Updated      ; (intern)
@@ -86,14 +87,14 @@ DeclareModule MenuGadget
     
   EndEnumeration
   
-; Items
+  ; Items
   Enumeration
     
     #MenuGadgetItem_None = -1
     
   EndEnumeration
   
-; States
+  ; States
   EnumerationBinary
     
     #MenuGadget_Checked
@@ -102,7 +103,7 @@ DeclareModule MenuGadget
   EndEnumeration
   
   
-; Default colors
+  ; Default colors
   #MenuGadgetColor_MenuDefault         = $D0D0D0
   #MenuGadgetColor_LineDefault         = $808080
   #MenuGadgetColor_FaceDefault         = $D0D0D0
@@ -113,12 +114,12 @@ DeclareModule MenuGadget
   
   
   
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-;-  2. Structures
-;|__________________________________________________________________________________________________
+  ;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  ;-  2. Structures
+  ;|__________________________________________________________________________________________________
   
   
-; ItemColor
+  ; ItemColor
   Structure MenuGadgetItemColor
     Text.i
     Background.i
@@ -129,7 +130,7 @@ DeclareModule MenuGadget
     
   EndStructure
   
-; ItemLayout
+  ; ItemLayout
   Structure MenuGadgetItemLayout
     X.d         ; X-Position
     Y.d         ; Y-Position
@@ -148,7 +149,7 @@ DeclareModule MenuGadget
     ImageH.d
   EndStructure
   
-; ItemMenu
+  ; ItemMenu
   Structure MenuGadgetItem
     Text.s
     TextShortCut.s
@@ -173,7 +174,7 @@ DeclareModule MenuGadget
   EndStructure
   
   
-; Struct
+  ; Struct
   
   Structure MenuGadget
     
@@ -259,7 +260,7 @@ DeclareModule MenuGadget
     
   EndStructure
   
-; Declare public
+  ; Declare public
   Declare UpdateMenuGadget(Gadget.i)
   Declare FreeMenuGadget(Gadget.i)
   Declare MenuGadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Attributes.i, Window.i, ColorTheme.s = "", Nested = #False)
@@ -269,7 +270,7 @@ DeclareModule MenuGadget
   Declare.i MenuGadgetItemID(Gadget.i, Position.i)
   Declare UsePBMenu(Gadget.i, MenuID.i)
   Declare FreePBMenu(Gadget.i)
- ; Set & Get Declare
+  ; Set & Get Declare
   Declare SetMenuGadgetAttribute(Gadget.i, Attribute.i, Value.f)
   Declare.i GetMenuGadgetAttribute(Gadget.i, Attribute.i)
   Declare SetMenuGadgetData(Gadget.i, DataValue.i)
@@ -294,23 +295,23 @@ EndDeclareModule
 
 Module MenuGadget
   
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-;-  3. Initializations
-;|__________________________________________________________________________________________________
+  ;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  ;-  3. Initializations
+  ;|__________________________________________________________________________________________________
   
   
   
-;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-;-  4. Procedures & Macros
-;|__________________________________________________________________________________________________
+  ;|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  ;-  4. Procedures & Macros
+  ;|__________________________________________________________________________________________________
   
   
   
-;-  4.1 Private procedures for internal calculations ! Not for use !
-;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-; StartDrawing()
+  ;-  4.1 Private procedures for internal calculations ! Not for use !
+  ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  ; StartDrawing()
   Procedure.i MenuGadget_StartDrawing(*MenuGadget.MenuGadget)
-  ;Found in: Update(*), Callback(), UpdateMenuGadget(Gadget.i)
+    ;Found in: Update(*), Callback(), UpdateMenuGadget(Gadget.i)
     
     *MenuGadget\DrawingID = StartVectorDrawing(CanvasVectorOutput(*MenuGadget\Number))
     
@@ -318,15 +319,15 @@ Module MenuGadget
   EndProcedure
   
   
-; StopDrawing()
-;Update(*), Callback(),, UpdateMenuGadget(Gadget.i)
+  ; StopDrawing()
+  ;Update(*), Callback(),, UpdateMenuGadget(Gadget.i)
   Procedure MenuGadget_StopDrawing(*MenuGadget.MenuGadget)
     StopVectorDrawing()
   EndProcedure
   
-; (Re)définir une nouvelle icône pour l'onglet
+  ; (Re)définir une nouvelle icône pour l'onglet
   Procedure MenuGadget_ReplaceImage(*MenuGadget.MenuGadget, *Item.MenuGadgetItem, NewImageID.i = #Null)
-  ;,,AddMenuGadgetItem(G,),SetMenuGadgetItemImage(G)
+    ;,,AddMenuGadgetItem(G,),SetMenuGadgetItemImage(G)
     
     With *MenuGadget
       If IsImage(*Item\Image)
@@ -341,11 +342,11 @@ Module MenuGadget
     EndWith
   EndProcedure
   
-; La position.
+  ; La position.
   Procedure.i MenuGadget_ItemID(*MenuGadget.MenuGadget, Position.i)
-  ;ItemID(*), Examine(*)(wheel), AddMenuGadgetItem()
-  ;,, MenuGadgetItemID(G,),RemoveMenuGadgetItem(G,),SetMenuGadgetState(G,),SetMenuGadgetItemAttribute(G,)
-  ;,, SetMenuGadgetItemImage(G,), SetMenuGadgetItemPosition(G,),SetMenuGadgetItemState(G,)
+    ;ItemID(*), Examine(*)(wheel), AddMenuGadgetItem()
+    ;,, MenuGadgetItemID(G,),RemoveMenuGadgetItem(G,),SetMenuGadgetState(G,),SetMenuGadgetItemAttribute(G,)
+    ;,, SetMenuGadgetItemImage(G,), SetMenuGadgetItemPosition(G,),SetMenuGadgetItemState(G,)
     
     With *MenuGadget
       
@@ -365,7 +366,7 @@ Module MenuGadget
     
   EndProcedure
   
-; 	
+  ; 	
   Procedure MenuGadget_ClearItem(*MenuGadget.MenuGadget, *Item.MenuGadgetItem) ; Code OK
     
     If IsImage(*Item\Image)
@@ -377,15 +378,15 @@ Module MenuGadget
   
   
   
-; Détermine l'apparence et l'emplacement des onglets
+  ; Détermine l'apparence et l'emplacement des onglets
   Procedure MenuGadget_Examine(*MenuGadget.MenuGadget)
-  ;1xCallback()
+    ;1xCallback()
     
     Protected i
     
     
     With *MenuGadget
-    ; Initialisation
+      ; Initialisation
       \MouseX = GetGadgetAttribute(\Number, #PB_Canvas_MouseX)
       \MouseY = GetGadgetAttribute(\Number, #PB_Canvas_MouseY)
       
@@ -402,8 +403,8 @@ Module MenuGadget
           i - 1
           \HoverItem = i
           
-        ;Case #PB_EventType_LeftButtonUp
-        ;Debug "up"
+          ;Case #PB_EventType_LeftButtonUp
+          ;Debug "up"
           
         Case #PB_EventType_MouseLeave
           \MouseIn = #False
@@ -431,10 +432,10 @@ Module MenuGadget
   
   
   
-; Détermine l'apparence et l'emplacement des onglets
+  ; Détermine l'apparence et l'emplacement des onglets
   Procedure MenuGadget_Update(*MenuGadget.MenuGadget)
-  ;Callback()
-  ;,, UpdateMenuGadget(G)
+    ;Callback()
+    ;,, UpdateMenuGadget(G)
     
     Protected i
     Protected Y.d, y0.d, W.d, TextWidthVisible.d
@@ -443,17 +444,22 @@ Module MenuGadget
     
     With *MenuGadget
       
-    ;ajout des items
+      ;ajout des items
       If \UpdatePosted
         
         Y = \MarginTop
         
-      ; préparation
-        VectorFont(\FontID, \FontSize)
+        ; préparation
+        If \FontSize
+          VectorFont(\FontID, \FontSize)
+        Else
+          VectorFont(\FontID)
+        EndIf
+        
         
         If \H = #MenuGadget_DefaultHeight
           
-        ; a new size calculation = *MenuGadget\H = 0
+          ; a new size calculation = *MenuGadget\H = 0
           
           \H                 = \BorderH + \MarginTop + VectorTextHeight("ÎÇ") + \interline + \MarginBottom + \BorderH
           \TextHeight        = VectorTextHeight("ÎÇ")
@@ -490,46 +496,49 @@ Module MenuGadget
             \W             = \W_WithoutText + \MaxLengthText
           EndIf
           
-          \Item()\TopLineY       = \Interline + Y
-          \Item()\MiddleLineY    = \Interline + \TextHeightVisible / 2 + Y
-          \Item()\BottomLineY    = \Interline + \TextHeightVisible + Y
-          \Item()\Layout\X       = 0
-          \Item()\Layout\Y       = y0
-          \Item()\Layout\Width   = \W             ; Largeur (intérieure)
-          \Item()\Layout\ Height = \TextHeight    ; Hauteur (intérieure)
+          \Item()\TopLineY      = \Interline + Y
+          \Item()\MiddleLineY   = \Interline + \TextHeightVisible / 2 + Y
+          \Item()\BottomLineY   = \Interline + \TextHeightVisible + Y
+          \Item()\Layout\X      = 0
+          \Item()\Layout\Y      = y0
+          \Item()\Layout\Width  = \W            ; Largeur (intérieure)
+          \Item()\Layout\Height = \TextHeight    ; Hauteur (intérieure)
           
           \Item()\Layout\TextX         = \TextX
           \Item()\Layout\TextY         = y0
           \Item()\Layout\TextShortCutX = \W - \MarginRight - \Item()\Layout\TextShortCutW
           
           \Item()\Layout\ImageX = \BorderW + \MarginLeft
-          \Item()\Layout\ImageY = y0   ;
-          \Item()\Layout\ImageH = \TextHeight
+          \Item()\Layout\ImageY = \Item()\TopLineY
+          \Item()\Layout\ImageH = \Item()\BottomLineY - \Item()\TopLineY;\TextHeight
           
           
           If \Item()\UnderlineCharPos
             \Item()\UnderlineC = Mid(\Item()\Text, \Item()\UnderlineCharPos, 1)
             \Item()\UnderlineX = \Item()\Layout\TextX + VectorTextWidth(Left(\Item()\Text, \Item()\UnderlineCharPos - 1), #PB_VectorText_Visible)
-            \Item()\UnderlineY = \y0(i) + VectorTextHeight(\Item()\UnderlineC)
-            \Item()\UnderlineW = VectorTextWidth(\Item()\UnderlineC, #PB_VectorText_Visible)
+            \Item()\UnderlineY = \y0(i) + VectorTextHeight(\Item()\UnderlineC, #PB_VectorText_Baseline) + DesktopScaledY(2)
+            \Item()\UnderlineW = VectorTextWidth(\Item()\UnderlineC)
           EndIf
           
           Y + \Interline + \TextHeightVisible
           
         Next i
         
-        \H = Y + \MarginBottom
+        \H     = Y + \MarginBottom
+        \y0(i) = Y - \MarginBottom
         
-        
-      ; Redimensionnement du gadget
-        
+        ; Redimensionnement du gadget
         MenuGadget_StopDrawing(*MenuGadget)
         ResizeGadget(\Container, #PB_Ignore, #PB_Ignore, DesktopUnscaledX(\W + \RBorder), DesktopUnscaledY(\H + \RBorder))
         ResizeGadget(\Number, #PB_Ignore, #PB_Ignore, DesktopUnscaledX(\W), DesktopUnscaledY(\H))
         
         PostEvent(#PB_Event_Gadget, \Window, \Number, #MenuGadget_EventType_Resize, - 1)
         MenuGadget_StartDrawing(*MenuGadget)
-        VectorFont(\FontID)
+        If \FontSize
+          VectorFont(\FontID, \FontSize)
+        Else
+          VectorFont(\FontID)
+        EndIf
         \Resized = #True
         
       EndIf
@@ -539,10 +548,10 @@ Module MenuGadget
   
   
   
-; Dessine tout le MenuGadget
+  ; Dessine tout le MenuGadget
   Procedure MenuGadget_Draw(*MenuGadget.MenuGadget)
-  ;Callback()
-  ;,, UpdateMenuGadget(G)
+    ;Callback()
+    ;,, UpdateMenuGadget(G)
     
     With *MenuGadget
       If \DrawDisabled
@@ -552,16 +561,20 @@ Module MenuGadget
       Protected *n
       Protected i
       Protected Line$, tmp$, c$
-      Protected y0.f, ux.f, uy.f, uw.f
+      Protected y0.f, ux.f, uy.f, uw.f, y1.f
       
       
-    ; initialisation = CLS
-      VectorFont(\FontID, \FontSize)
+      ; initialisation = CLS
+      If \FontSize
+        VectorFont(\FontID, \FontSize)
+      Else
+        VectorFont(\FontID)
+      EndIf
       VectorSourceColor(\MenuColor)
       FillVectorOutput()
       
-    ;draw text
-      *n = FirstElement(\Item());SelectElement(\Item(),0)
+      ;draw text
+      *n = FirstElement(\Item())
       
       
       If ListSize(\Item()) > 0
@@ -569,7 +582,7 @@ Module MenuGadget
         For i = 1 To \CountLines
           Line$ = \Item()\Text
           
-        ;draw text
+          ;draw text
           If *n
             If Line$
               
@@ -586,7 +599,7 @@ Module MenuGadget
               MovePathCursor(\Item()\Layout\TextShortCutX, \y0(i))
               DrawVectorText(\Item()\TextShortCut)
               
-            ;underscore
+              ;underscore
               If \Item()\UnderlineCharPos
                 MovePathCursor(\Item()\UnderlineX, \Item()\UnderlineY)
                 AddPathLine(\Item()\UnderlineX + \Item()\UnderlineW, \Item()\UnderlineY)
@@ -594,7 +607,7 @@ Module MenuGadget
               EndIf
               
             Else
-            ;If the text to draw is "" and ColorLine>0 then draw a line
+              ;If the text to draw is "" and ColorLine>0 then draw a line
               If \LineColor
                 VectorSourceColor(\LineColor)
                 
@@ -604,7 +617,7 @@ Module MenuGadget
               EndIf
             EndIf
             
-          ;Image
+            ;Image
             If \Item()\Checked
               MovePathCursor(\Item()\Layout\ImageX, \Item()\Layout\ImageY)
               DrawVectorImage(\ImageCheckID, $FF, \Item()\Layout\ImageH, \Item()\Layout\ImageH)
@@ -620,12 +633,13 @@ Module MenuGadget
             EndIf
           EndIf
           
-        ;draw outlines
-        ;MovePathCursor(\Item()\Layout\TextX, \Item()\TopLineY)
-        ;AddPathLine( VectorOutputWidth(), \Item()\TopLineY)
-        ;MovePathCursor(\Item()\Layout\TextX, \Item()\BottomLineY)
-        ;AddPathLine(VectorOutputWidth(), \Item()\BottomLineY)
-        ;StrokePath(1)
+          ;draw outlines
+          ;         MovePathCursor(\Item()\Layout\TextX, \Item()\TopLineY)
+          ;         AddPathLine( VectorOutputWidth(), \Item()\TopLineY)
+          ;         MovePathCursor(\Item()\Layout\TextX, \Item()\BottomLineY)
+          ;         AddPathLine(VectorOutputWidth(), \Item()\BottomLineY)
+          ;         StrokePath(1)
+          
           *n = NextElement(\Item())
         Next i
         
@@ -633,12 +647,12 @@ Module MenuGadget
         If \MouseIn
           If \HoverItem > 0
             
-            y0 = \y0(\HoverItem)
+            y0 = \y0(\HoverItem):y1 = \y0(\HoverItem + 1) - y0
             SelectElement(\Item(), \HoverItem - 1)
             line$ = \Item()\Text
             If line$
               VectorSourceColor(\Item()\Color\FaceColorSelected)
-              AddPathBox(\BorderW, y0, VectorOutputWidth() - \BorderW - \BorderW, \TextHeightVisible)
+              AddPathBox(\BorderW, \Item()\TopLineY, VectorOutputWidth() - \BorderW - \BorderW, y1)
               FillPath()
               VectorSourceColor(\Item()\Color\TextColorSelected)
               MovePathCursor(\Item()\Layout\TextX, y0)
@@ -652,15 +666,15 @@ Module MenuGadget
     
   EndProcedure
   
-; 	
+  ; 	
   
-; Envoie un événement pour mettre à jour l'onglet.
+  ; Envoie un événement pour mettre à jour l'onglet.
   Procedure MenuGadget_PostUpdate(*MenuGadget.MenuGadget)
-  ;,,AddMenuGadgetItem(G,),RemoveMenuGadgetItem(G,),ClearMenuGadgetItems(G),SetMenuGadgetAttribute(G
-  ;,,SetMenuGadgetFont(G,)
-  ;,,SetMenuGadgetState(G,),SetMenuGadgetColor(G,),SetMenuGadgetItemAttribute(G,),SetMenuGadgetItemColor(G),
-  ;,,SetMenuGadgetItemImage(G,),SetMenuGadgetItemPosition(G,),SetMenuGadgetItemState(G,),
-  ;,,SetMenuGadgetItemText(G,)
+    ;,,AddMenuGadgetItem(G,),RemoveMenuGadgetItem(G,),ClearMenuGadgetItems(G),SetMenuGadgetAttribute(G
+    ;,,SetMenuGadgetFont(G,)
+    ;,,SetMenuGadgetState(G,),SetMenuGadgetColor(G,),SetMenuGadgetItemAttribute(G,),SetMenuGadgetItemColor(G),
+    ;,,SetMenuGadgetItemImage(G,),SetMenuGadgetItemPosition(G,),SetMenuGadgetItemState(G,),
+    ;,,SetMenuGadgetItemText(G,)
     
     If *MenuGadget\UpdatePosted = #False
       *MenuGadget\UpdatePosted = #True
@@ -671,7 +685,7 @@ Module MenuGadget
   
   
   Procedure MenuGadget_Callback()
-  ;,,FreeMenuGadget(G), MenuGadget(G,)
+    ;,,FreeMenuGadget(G), MenuGadget(G,)
     
     Protected *MenuGadget.MenuGadget = GetGadgetData(EventGadget())
     If *MenuGadget = #Null
@@ -704,13 +718,13 @@ Module MenuGadget
   EndProcedure
   
   
-;-  4.2 Procedures for the MenuGadget
-;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  ;-  4.2 Procedures for the MenuGadget
+  ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
   
   
-; Effectue une mise à jour calcul et redessine le gadget.
+  ; Effectue une mise à jour calcul et redessine le gadget.
   Procedure UpdateMenuGadget(Gadget.i)
-  ;,,1xMenuGadget(G,)
+    ;,,1xMenuGadget(G,)
     
     Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
     
@@ -825,13 +839,13 @@ Module MenuGadget
       Result = Gadget
     Else
       If Attributes & #MenuGadget_BorderRaised
-        Border = #PB_Container_Raised:RBorder = 6
+        Border = #PB_Container_Raised:RBorder = DesktopScaledX(6)
       ElseIf Attributes & #MenuGadget_BorderFlat
-        Border = #PB_Container_Flat:RBorder = 1
+        Border = #PB_Container_Flat:RBorder = DesktopScaledX(1)
       ElseIf Attributes & #MenuGadget_BorderSingle
-        Border = #PB_Container_Single:RBorder = 2
+        Border = #PB_Container_Single:RBorder = DesktopScaledX(2)
       ElseIf Attributes & #MenuGadget_BorderDouble
-        Border = #PB_Container_Double:RBorder = 4
+        Border = #PB_Container_Double:RBorder = DesktopScaledX(4)
       Else
         Border = #PB_Container_BorderLess:RBorder = 0
       EndIf
@@ -873,7 +887,7 @@ Module MenuGadget
       CompilerEndSelect
       
       If Attributes & #MenuGadget_FontLarge
-        \DefaultFontSize = 14
+        \DefaultFontSize = 20
       EndIf
       
       
@@ -893,7 +907,7 @@ Module MenuGadget
       \Nested   = Nested
       \EventTab = #MenuGadgetItem_None
       
-    ;Common
+      ;Common
       \BorderW      = DesktopScaledX(2)
       \BorderH      = DesktopScaledY(2)
       \MarginTop    = DesktopScaledY(0)
@@ -916,9 +930,9 @@ Module MenuGadget
       \PBMenuID     = -1
       
     EndWith
-  ; 		
+    ; 		
     BindGadgetEvent(Gadget, @MenuGadget_Callback())
-  ; 		UpdateMenuGadget(Gadget)
+    ; 		UpdateMenuGadget(Gadget)
     
     ProcedureReturn Result
   EndProcedure
@@ -944,8 +958,8 @@ Module MenuGadget
     
     *MenuGadget\CountLines = *MenuGadget\CountLines + 1
     
-    ReDim *MenuGadget\y0(*MenuGadget\CountLines)
-    ReDim *MenuGadget\yy(*MenuGadget\CountLines)
+    ReDim *MenuGadget\y0(*MenuGadget\CountLines + 1)
+    ReDim *MenuGadget\yy(*MenuGadget\CountLines + 1)
     
     
     With *Item
@@ -966,7 +980,7 @@ Module MenuGadget
       \Color\LineColor         = *MenuGadget\LineColor
       \FontID                  = *MenuGadget\FontID
       \FontSize                = *MenuGadget\FontSize
-      \UnderlineT              = 1.1
+      \UnderlineT              = DesktopScaledX(1.1)
     EndWith
     
     MenuGadget_PostUpdate(*MenuGadget)
@@ -1054,8 +1068,8 @@ Module MenuGadget
   EndProcedure
   
   
-;-  4.3 Set- & Get-Procedure
-;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  ;-  4.3 Set- & Get-Procedure
+  ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
   
   Procedure SetMenuGadgetAttribute(Gadget.i, Attribute.i, Value.f)
     
@@ -1104,7 +1118,7 @@ Module MenuGadget
   
   
   
-; Renvoie la valeur d'un attribut.
+  ; Renvoie la valeur d'un attribut.
   Procedure.i GetMenuGadgetAttribute(Gadget.i, Attribute.i)
     
     Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
@@ -1134,7 +1148,7 @@ Module MenuGadget
     
   EndProcedure
   
-; Modifie la valeur data.
+  ; Modifie la valeur data.
   Procedure SetMenuGadgetData(Gadget.i, DataValue.i)
     
     Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
@@ -1156,7 +1170,7 @@ Module MenuGadget
     Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
     
     *MenuGadget\FontSize = FontSize
-  ; Reset to 0 to force a new size calculation
+    ; Reset to 0 to force a new size calculation
     *MenuGadget\W = 0
     *MenuGadget\H = 0
     
@@ -1168,13 +1182,17 @@ Module MenuGadget
     
     Protected *MenuGadget.MenuGadget = GetGadgetData(Gadget)
     
-    If FontID = #PB_Default
-      *MenuGadget\FontID = *MenuGadget\DefaultFontID
-    Else
-      *MenuGadget\FontID = FontID
+    If FontID
+      If FontID = #PB_Default
+        *MenuGadget\FontID   = *MenuGadget\DefaultFontID
+        *MenuGadget\FontSize = *MenuGadget\DefaultFontSize
+      Else
+        *MenuGadget\FontID   = FontID
+        *MenuGadget\FontSize = 0
+      EndIf
     EndIf
     
-  ; Reset to 0 to force a new size calculation
+    ; Reset to 0 to force a new size calculation
     *MenuGadget\W = 0
     *MenuGadget\H = 0
     
@@ -1349,7 +1367,7 @@ Module MenuGadget
     Protected tmp$
     
     If *Item
-    ;     *Item\Text = Text
+      ;     *Item\Text = Text
       *Item\Text             = StringField(Text, 1, #TAB$)
       *Item\TextShortCut     = StringField(Text, 2, #TAB$)
       tmp$                   = ReplaceString(*Item\Text, "&&", Chr(1)); underline a char or add '&'
@@ -1423,10 +1441,10 @@ Module MenuGadget
     
   EndProcedure
   
-;Image png of a 'check' 512x512
+  ;Image png of a 'check' 512x512
   DataSection
     check_png_start:
-  ; size : 6641 bytes
+    ; size : 6641 bytes
     Data.q $0A1A0A0D474E5089, $524448490D000000, $0002000000020000, $D478F40000000608, $49427304000000FA
     Data.q $64087C0808080854, $5948700900000088, $0D0000D70D000073, $0000789B284201D7, $6F53745845741900
     Data.q $7700657261777466, $63736B6E692E7777, $9B67726F2E657061, $496E1900001A3CEE, $7FDDED9C78544144
@@ -1680,9 +1698,9 @@ CompilerIf #PB_Compiler_IsMainFile
     UsePNGImageDecoder()
     
     ;Try different font
-    ;LoadFont(0, "Monotype Corsiva", 20)
+    LoadFont(0, "Monotype Corsiva", 24)
     ;   LoadFont(0, "Times New Roman", 20)
-    LoadFont(0, "", 20)
+    ;LoadFont(0, "", 20)
     ;   LoadFont(0, "Times New Roman", 11)
     
     
@@ -1715,6 +1733,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     UsePBMenu(Gadget, 0)
     UsePBMenu(Gadget, #PB_Any)
     
+    ;     SetMenuGadgetFont(Gadget, FontID(0))
+    ;     SetMenuGadgetFontSize(Gadget, 18)
     
     ;- Loop
     Repeat
@@ -1731,7 +1751,7 @@ CompilerIf #PB_Compiler_IsMainFile
               Select EventType()
                 Case #PB_EventType_MouseMove
                   If Menu
-                    ;                     Debug "move"
+                    ; Debug "move"
                   EndIf
                 Case #PB_EventType_LeftClick
                   Debug "N°=" + MenuClick()
@@ -1757,7 +1777,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 17
 ; Folding = --------
 ; EnableXP
 ; DPIAware
